@@ -35,10 +35,19 @@ claude mcp add --scope user gitlab \
   -- npx -y @zereight/mcp-gitlab
 ```
 
-Or from raw JSON:
+Raw JSON config:
 
-```bash
-claude mcp add-json --scope user gitlab '{"type":"stdio","command":"npx","args":["-y","@zereight/mcp-gitlab"],"env":{"GITLAB_API_URL":"https://<gitlab-host>/api/v4","GITLAB_PERSONAL_ACCESS_TOKEN":"<REDACTED>","GITLAB_READ_ONLY_MODE":"false"}}'
+```json
+{
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "@zereight/mcp-gitlab"],
+  "env": {
+    "GITLAB_API_URL": "https://<gitlab-host>/api/v4",
+    "GITLAB_PERSONAL_ACCESS_TOKEN": "<REDACTED>",
+    "GITLAB_READ_ONLY_MODE": "false"
+  }
+}
 ```
 
 ### grafana
@@ -52,10 +61,18 @@ claude mcp add --scope user grafana \
   -- docker run --rm -i -e GRAFANA_URL -e GRAFANA_SERVICE_ACCOUNT_TOKEN grafana/mcp-grafana -t stdio
 ```
 
-Or from raw JSON:
+Raw JSON config:
 
-```bash
-claude mcp add-json --scope user grafana '{"type":"stdio","command":"docker","args":["run","--rm","-i","-e","GRAFANA_URL","-e","GRAFANA_SERVICE_ACCOUNT_TOKEN","grafana/mcp-grafana","-t","stdio"],"env":{"GRAFANA_URL":"https://<grafana-host>","GRAFANA_SERVICE_ACCOUNT_TOKEN":"<REDACTED>"}}'
+```json
+{
+  "type": "stdio",
+  "command": "docker",
+  "args": ["run", "--rm", "-i", "-e", "GRAFANA_URL", "-e", "GRAFANA_SERVICE_ACCOUNT_TOKEN", "grafana/mcp-grafana", "-t", "stdio"],
+  "env": {
+    "GRAFANA_URL": "https://<grafana-host>",
+    "GRAFANA_SERVICE_ACCOUNT_TOKEN": "<REDACTED>"
+  }
+}
 ```
 
 ### kubernetes
@@ -69,10 +86,18 @@ claude mcp add --scope user kubernetes \
   -- npx -y mcp-server-kubernetes
 ```
 
-Or from raw JSON:
+Raw JSON config:
 
-```bash
-claude mcp add-json --scope user kubernetes '{"type":"stdio","command":"npx","args":["-y","mcp-server-kubernetes"],"env":{"ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS":"true","KUBECONFIG":"'"$HOME"'/.kube/config.merged"}}'
+```json
+{
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "mcp-server-kubernetes"],
+  "env": {
+    "ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS": "true",
+    "KUBECONFIG": "$HOME/.kube/config.merged"
+  }
+}
 ```
 
 ### playwright
@@ -83,10 +108,15 @@ Official Playwright MCP server ([@playwright/mcp](https://www.npmjs.com/package/
 claude mcp add --scope user playwright -- npx @playwright/mcp@latest
 ```
 
-Or from raw JSON:
+Raw JSON config:
 
-```bash
-claude mcp add-json --scope user playwright '{"type":"stdio","command":"npx","args":["@playwright/mcp@latest"],"env":{}}'
+```json
+{
+  "type": "stdio",
+  "command": "npx",
+  "args": ["@playwright/mcp@latest"],
+  "env": {}
+}
 ```
 
 ### vault-mcp-server
@@ -100,10 +130,18 @@ claude mcp add --scope user vault-mcp-server \
   -- docker run -i --rm -e VAULT_ADDR -e VAULT_TOKEN hashicorp/vault-mcp-server
 ```
 
-Or from raw JSON:
+Raw JSON config:
 
-```bash
-claude mcp add-json --scope user vault-mcp-server '{"type":"stdio","command":"docker","args":["run","-i","--rm","-e","VAULT_ADDR","-e","VAULT_TOKEN","hashicorp/vault-mcp-server"],"env":{"VAULT_ADDR":"https://<vault-host>","VAULT_TOKEN":"<REDACTED>"}}'
+```json
+{
+  "type": "stdio",
+  "command": "docker",
+  "args": ["run", "-i", "--rm", "-e", "VAULT_ADDR", "-e", "VAULT_TOKEN", "hashicorp/vault-mcp-server"],
+  "env": {
+    "VAULT_ADDR": "https://<vault-host>",
+    "VAULT_TOKEN": "<REDACTED>"
+  }
+}
 ```
 
 ## CLI commands
