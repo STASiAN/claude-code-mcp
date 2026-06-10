@@ -101,6 +101,26 @@ Official HashiCorp Vault MCP server run as a Docker container with env passthrou
 }
 ```
 
+## CLI commands
+
+Claude Code manages MCP servers via `claude mcp`:
+
+```bash
+claude mcp list                        # list configured servers (health-checked)
+claude mcp get <name>                  # details for one server
+claude mcp add <name> -e KEY=val -- <command> [args...]
+                                       # add a stdio server
+claude mcp add --transport http <name> <url> --header "Authorization: Bearer ..."
+                                       # add an HTTP server
+claude mcp add-json <name> '<json>'    # add a server from a JSON blob (used below)
+claude mcp remove <name>               # remove a server
+claude mcp add-from-claude-desktop     # import servers from Claude Desktop (Mac/WSL)
+claude mcp reset-project-choices       # reset approve/reject choices for project .mcp.json servers
+claude mcp serve                       # run Claude Code itself as an MCP server
+```
+
+`add`/`add-json`/`remove` accept `--scope`: `user` (default for this inventory — stored in `~/.claude.json`, available in every project), `local` (per-project, private to this machine), or `project` (written to a shareable `.mcp.json` in the repo).
+
 ## Restoring on a new machine
 
 Each server can be re-registered at user scope with `claude mcp add-json` — substitute real values for `<REDACTED>` and the masked `<...-host>` URLs:
