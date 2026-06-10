@@ -164,6 +164,32 @@ claude mcp serve                       # run Claude Code itself as an MCP server
 
 `add`/`add-json`/`remove` accept `--scope`: `user` (default for this inventory — stored in `~/.claude.json`, available in every project), `local` (per-project, private to this machine), or `project` (written to a shareable `.mcp.json` in the repo).
 
+## Importing a JSON config
+
+Any "Raw JSON config" block above can be imported in three ways:
+
+- **CLI** — pass it to `claude mcp add-json` as a single-quoted string, e.g. for `playwright`:
+
+  ```bash
+  claude mcp add-json --scope user playwright '{"type":"stdio","command":"npx","args":["@playwright/mcp@latest"],"env":{}}'
+  ```
+
+- **User scope, manual** — open `~/.claude.json` and add the block under the top-level `mcpServers` key, with the server name as the key:
+
+  ```json
+  {
+    "mcpServers": {
+      "playwright": { "type": "stdio", "command": "npx", "args": ["@playwright/mcp@latest"], "env": {} }
+    }
+  }
+  ```
+
+  Restart Claude Code (or start a new session) to pick it up.
+
+- **Project scope** — put the same `mcpServers` structure into a `.mcp.json` file at the project root. It is shared with everyone who clones the repo; Claude Code asks each user to approve the server on first use.
+
+After importing, verify with `claude mcp list` or `claude mcp get <name>` — both health-check the server.
+
 ## Prerequisites
 
 Node.js (`npx`) for `gitlab`/`kubernetes`/`playwright`, Docker for the Grafana and Vault servers, and a kubeconfig at `~/.kube/config.merged` for `kubernetes`. To restore on a new machine, run each server's `claude mcp add` command above, substituting real values for `<REDACTED>` and the masked `<...-host>` URLs.
