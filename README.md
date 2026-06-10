@@ -35,6 +35,12 @@ claude mcp add --scope user gitlab \
   -- npx -y @zereight/mcp-gitlab
 ```
 
+Or from raw JSON:
+
+```bash
+claude mcp add-json --scope user gitlab '{"type":"stdio","command":"npx","args":["-y","@zereight/mcp-gitlab"],"env":{"GITLAB_API_URL":"https://<gitlab-host>/api/v4","GITLAB_PERSONAL_ACCESS_TOKEN":"<REDACTED>","GITLAB_READ_ONLY_MODE":"false"}}'
+```
+
 ### grafana
 
 Official Grafana MCP server run as a Docker container. Credentials are passed into the container via `-e` env passthrough. Register once per Grafana instance (separate name, URL, and service-account token each).
@@ -44,6 +50,12 @@ claude mcp add --scope user grafana \
   -e GRAFANA_URL="https://<grafana-host>" \
   -e GRAFANA_SERVICE_ACCOUNT_TOKEN="<REDACTED>" \
   -- docker run --rm -i -e GRAFANA_URL -e GRAFANA_SERVICE_ACCOUNT_TOKEN grafana/mcp-grafana -t stdio
+```
+
+Or from raw JSON:
+
+```bash
+claude mcp add-json --scope user grafana '{"type":"stdio","command":"docker","args":["run","--rm","-i","-e","GRAFANA_URL","-e","GRAFANA_SERVICE_ACCOUNT_TOKEN","grafana/mcp-grafana","-t","stdio"],"env":{"GRAFANA_URL":"https://<grafana-host>","GRAFANA_SERVICE_ACCOUNT_TOKEN":"<REDACTED>"}}'
 ```
 
 ### kubernetes
@@ -57,12 +69,24 @@ claude mcp add --scope user kubernetes \
   -- npx -y mcp-server-kubernetes
 ```
 
+Or from raw JSON:
+
+```bash
+claude mcp add-json --scope user kubernetes '{"type":"stdio","command":"npx","args":["-y","mcp-server-kubernetes"],"env":{"ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS":"true","KUBECONFIG":"'"$HOME"'/.kube/config.merged"}}'
+```
+
 ### playwright
 
 Official Playwright MCP server ([@playwright/mcp](https://www.npmjs.com/package/@playwright/mcp)) with default settings — no env vars, always pulls `@latest`.
 
 ```bash
 claude mcp add --scope user playwright -- npx @playwright/mcp@latest
+```
+
+Or from raw JSON:
+
+```bash
+claude mcp add-json --scope user playwright '{"type":"stdio","command":"npx","args":["@playwright/mcp@latest"],"env":{}}'
 ```
 
 ### vault-mcp-server
@@ -74,6 +98,12 @@ claude mcp add --scope user vault-mcp-server \
   -e VAULT_ADDR="https://<vault-host>" \
   -e VAULT_TOKEN="<REDACTED>" \
   -- docker run -i --rm -e VAULT_ADDR -e VAULT_TOKEN hashicorp/vault-mcp-server
+```
+
+Or from raw JSON:
+
+```bash
+claude mcp add-json --scope user vault-mcp-server '{"type":"stdio","command":"docker","args":["run","-i","--rm","-e","VAULT_ADDR","-e","VAULT_TOKEN","hashicorp/vault-mcp-server"],"env":{"VAULT_ADDR":"https://<vault-host>","VAULT_TOKEN":"<REDACTED>"}}'
 ```
 
 ## CLI commands
@@ -95,22 +125,6 @@ claude mcp serve                       # run Claude Code itself as an MCP server
 ```
 
 `add`/`add-json`/`remove` accept `--scope`: `user` (default for this inventory — stored in `~/.claude.json`, available in every project), `local` (per-project, private to this machine), or `project` (written to a shareable `.mcp.json` in the repo).
-
-### Alternative: `add-json`
-
-Each server from [Server details](#server-details) can equivalently be registered from its raw JSON config:
-
-```bash
-claude mcp add-json --scope user gitlab '{"type":"stdio","command":"npx","args":["-y","@zereight/mcp-gitlab"],"env":{"GITLAB_API_URL":"https://<gitlab-host>/api/v4","GITLAB_PERSONAL_ACCESS_TOKEN":"<REDACTED>","GITLAB_READ_ONLY_MODE":"false"}}'
-
-claude mcp add-json --scope user grafana '{"type":"stdio","command":"docker","args":["run","--rm","-i","-e","GRAFANA_URL","-e","GRAFANA_SERVICE_ACCOUNT_TOKEN","grafana/mcp-grafana","-t","stdio"],"env":{"GRAFANA_URL":"https://<grafana-host>","GRAFANA_SERVICE_ACCOUNT_TOKEN":"<REDACTED>"}}'
-
-claude mcp add-json --scope user kubernetes '{"type":"stdio","command":"npx","args":["-y","mcp-server-kubernetes"],"env":{"ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS":"true","KUBECONFIG":"'"$HOME"'/.kube/config.merged"}}'
-
-claude mcp add-json --scope user playwright '{"type":"stdio","command":"npx","args":["@playwright/mcp@latest"],"env":{}}'
-
-claude mcp add-json --scope user vault-mcp-server '{"type":"stdio","command":"docker","args":["run","-i","--rm","-e","VAULT_ADDR","-e","VAULT_TOKEN","hashicorp/vault-mcp-server"],"env":{"VAULT_ADDR":"https://<vault-host>","VAULT_TOKEN":"<REDACTED>"}}'
-```
 
 ## Prerequisites
 
