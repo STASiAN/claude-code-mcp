@@ -96,6 +96,22 @@ claude mcp serve                       # run Claude Code itself as an MCP server
 
 `add`/`add-json`/`remove` accept `--scope`: `user` (default for this inventory — stored in `~/.claude.json`, available in every project), `local` (per-project, private to this machine), or `project` (written to a shareable `.mcp.json` in the repo).
 
+### Alternative: `add-json`
+
+Each server from [Server details](#server-details) can equivalently be registered from its raw JSON config:
+
+```bash
+claude mcp add-json --scope user gitlab '{"type":"stdio","command":"npx","args":["-y","@zereight/mcp-gitlab"],"env":{"GITLAB_API_URL":"https://<gitlab-host>/api/v4","GITLAB_PERSONAL_ACCESS_TOKEN":"<REDACTED>","GITLAB_READ_ONLY_MODE":"false"}}'
+
+claude mcp add-json --scope user grafana '{"type":"stdio","command":"docker","args":["run","--rm","-i","-e","GRAFANA_URL","-e","GRAFANA_SERVICE_ACCOUNT_TOKEN","grafana/mcp-grafana","-t","stdio"],"env":{"GRAFANA_URL":"https://<grafana-host>","GRAFANA_SERVICE_ACCOUNT_TOKEN":"<REDACTED>"}}'
+
+claude mcp add-json --scope user kubernetes '{"type":"stdio","command":"npx","args":["-y","mcp-server-kubernetes"],"env":{"ALLOW_ONLY_NON_DESTRUCTIVE_TOOLS":"true","KUBECONFIG":"'"$HOME"'/.kube/config.merged"}}'
+
+claude mcp add-json --scope user playwright '{"type":"stdio","command":"npx","args":["@playwright/mcp@latest"],"env":{}}'
+
+claude mcp add-json --scope user vault-mcp-server '{"type":"stdio","command":"docker","args":["run","-i","--rm","-e","VAULT_ADDR","-e","VAULT_TOKEN","hashicorp/vault-mcp-server"],"env":{"VAULT_ADDR":"https://<vault-host>","VAULT_TOKEN":"<REDACTED>"}}'
+```
+
 ## Prerequisites
 
 Node.js (`npx`) for `gitlab`/`kubernetes`/`playwright`, Docker for the Grafana and Vault servers, and a kubeconfig at `~/.kube/config.merged` for `kubernetes`. To restore on a new machine, run each server's `claude mcp add` command above, substituting real values for `<REDACTED>` and the masked `<...-host>` URLs.
