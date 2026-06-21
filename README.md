@@ -106,21 +106,12 @@ Raw JSON config:
 
 MikroTik RouterOS MCP server ([jeff-nasseri/mikrotik-mcp](https://github.com/jeff-nasseri/mikrotik-mcp)), installed as a local binary (`mcp-server-mikrotik` on `$PATH` under `~/.local/bin`). It connects to the router over SSH and supports both password (`MIKROTIK_PASSWORD` / `--password`) and key-based (`MIKROTIK_KEY_FILENAME` / `--key-filename`) auth; this install uses a key, so no password is stored. Requires Python 3.8+ and a RouterOS device with SSH access enabled. See the [upstream installation guide](https://github.com/jeff-nasseri/mikrotik-mcp/blob/master/docs/getting-started/installation.md) for full options.
 
-**Install.** Three options, per upstream:
+**Install.** Two options, per upstream:
 
 - **MCP registry (recommended)** — let Claude Code fetch and install it by registry name; it pulls the `mcp-server-mikrotik` server metadata and prompts for credentials:
 
   ```bash
   claude mcp add io.github.jeff-nasseri/mikrotik-mcp
-  ```
-
-- **From source** — clone and `pip install -e .`, which puts the `mcp-server-mikrotik` entry point on your `PATH` (this is how it's installed here):
-
-  ```bash
-  git clone https://github.com/jeff-nasseri/mikrotik-mcp.git
-  cd mikrotik-mcp
-  python -m venv .venv && source .venv/bin/activate   # or install into ~/.local with pipx/uv
-  pip install -e .
   ```
 
 - **Docker** — pull the prebuilt image (`linux/amd64` + `linux/arm64`) instead of installing Python:
@@ -129,7 +120,7 @@ MikroTik RouterOS MCP server ([jeff-nasseri/mikrotik-mcp](https://github.com/jef
   docker pull ghcr.io/jeff-nasseri/mikrotik-mcp:latest
   ```
 
-The source/registry install gives a local `mcp-server-mikrotik` binary (stdio by default); register it with Claude Code:
+The registry install gives a local `mcp-server-mikrotik` binary (stdio by default); register it with Claude Code:
 
 ```bash
 claude mcp add --scope user mikrotik \
