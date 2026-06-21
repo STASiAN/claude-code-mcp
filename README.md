@@ -104,7 +104,18 @@ Raw JSON config:
 
 ### mikrotik
 
-MikroTik RouterOS MCP server, installed as a local binary (`mcp-server-mikrotik` on `$PATH` under `~/.local/bin`). It connects to the router over SSH using key-based auth — no password is stored; `MIKROTIK_KEY_FILENAME` points at the private key.
+MikroTik RouterOS MCP server ([jeff-nasseri/mikrotik-mcp](https://github.com/jeff-nasseri/mikrotik-mcp)), installed as a local binary (`mcp-server-mikrotik` on `$PATH` under `~/.local/bin`). It connects to the router over SSH. The upstream project authenticates with `MIKROTIK_PASSWORD`; this install instead uses key-based auth — no password is stored, `MIKROTIK_KEY_FILENAME` points at the private key.
+
+**Install.** The project is a Python package distributed via Git (no PyPI release); clone it and `pip install -e .`, which puts the `mcp-server-mikrotik` entry point on your `PATH`:
+
+```bash
+git clone https://github.com/jeff-nasseri/mikrotik-mcp.git
+cd mikrotik-mcp
+python -m venv .venv && source .venv/bin/activate   # or install into ~/.local with pipx/uv
+pip install -e .
+```
+
+Verify the binary runs (`mcp-server-mikrotik` speaks stdio by default), then register it with Claude Code:
 
 ```bash
 claude mcp add --scope user mikrotik \
@@ -245,4 +256,4 @@ After importing, verify with `claude mcp list` or `claude mcp get <name>` — bo
 
 ## Prerequisites
 
-Node.js (`npx`) for `gitlab`/`kubernetes`/`playwright`, Docker for the Grafana and Vault servers, and a kubeconfig at `~/.kube/config.merged` for `kubernetes`. `mikrotik` needs the `mcp-server-mikrotik` binary at `~/.local/bin` plus the SSH private key at `~/.ssh/mikrotik_mcp` (and its public key authorized on the router for the `mcp` user). `youtrack` needs only network reachability to the hosted endpoint and a valid bearer token — no local runtime. To restore on a new machine, run each server's `claude mcp add` command above, substituting real values for `<REDACTED>` and the masked `<...-host>` URLs.
+Node.js (`npx`) for `gitlab`/`kubernetes`/`playwright`, Docker for the Grafana and Vault servers, and a kubeconfig at `~/.kube/config.merged` for `kubernetes`. `mikrotik` needs the `mcp-server-mikrotik` binary (installed from [jeff-nasseri/mikrotik-mcp](https://github.com/jeff-nasseri/mikrotik-mcp) — see its section above) on `PATH` at `~/.local/bin`, plus the SSH private key at `~/.ssh/mikrotik_mcp` (and its public key authorized on the router for the `mcp` user). `youtrack` needs only network reachability to the hosted endpoint and a valid bearer token — no local runtime. To restore on a new machine, run each server's `claude mcp add` command above, substituting real values for `<REDACTED>` and the masked `<...-host>` URLs.
