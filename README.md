@@ -5,7 +5,7 @@ Inventory of all [MCP](https://modelcontextprotocol.io) (Model Context Protocol)
 - **Source of truth:** `~/.claude.json` → top-level `mcpServers` (user scope — available in every project)
 - **Settings files:** `~/.claude/settings.json` and `~/.claude/settings.local.json` contain **no** MCP-related configuration (no enable/disable lists, no `mcp__*` permission rules)
 - **Project-scoped servers:** none — no project in `~/.claude.json` registers its own `mcpServers`
-- **Generated:** 2026-06-10
+- **Generated:** 2026-06-21
 
 > 🔒 All credential values are redacted — `<REDACTED>` marks places where a real secret exists in the local config; only variable **names** are documented here. Internal URLs are masked with `<...-host>` placeholders.
 
@@ -16,10 +16,12 @@ Inventory of all [MCP](https://modelcontextprotocol.io) (Model Context Protocol)
 | [`gitlab`](#gitlab) | stdio | `npx` | `@zereight/mcp-gitlab` | GitLab API — repos, MRs, issues, CI |
 | [`grafana`](#grafana) | stdio | `docker` | `grafana/mcp-grafana` | Grafana — dashboards, Prometheus/Loki, OnCall, incidents |
 | [`kubernetes`](#kubernetes) | stdio | `npx` | `mcp-server-kubernetes` | kubectl / helm operations against configured clusters |
+| [`mikrotik`](#mikrotik) | stdio | local binary | `mcp-server-mikrotik` | MikroTik RouterOS — interfaces, firewall, DHCP, WireGuard, routing |
 | [`playwright`](#playwright) | stdio | `npx` | `@playwright/mcp` | Browser automation (navigate, click, screenshot, etc.) |
 | [`vault-mcp-server`](#vault-mcp-server) | stdio | `docker` | `hashicorp/vault-mcp-server` | HashiCorp Vault — secrets, mounts, PKI |
+| [`youtrack`](#youtrack) | http | — | (hosted endpoint) | YouTrack — issues, projects, agile boards |
 
-All servers are stdio transport; none use HTTP/SSE endpoints or custom headers.
+Most servers are stdio transport. `youtrack` is the exception: it is an HTTP server reached at a hosted `/mcp` endpoint with a bearer-token `Authorization` header.
 
 ## Server details
 
@@ -100,6 +102,35 @@ Raw JSON config:
 }
 ```
 
+### mikrotik
+
+MikroTik RouterOS MCP server, installed as a local binary (`mcp-server-mikrotik` on `$PATH` under `~/.local/bin`). It connects to the router over SSH using key-based auth — no password is stored; `MIKROTIK_KEY_FILENAME` points at the private key.
+
+```bash
+claude mcp add --scope user mikrotik \
+  -e MIKROTIK_HOST="<mikrotik-host>" \
+  -e MIKROTIK_USERNAME="mcp" \
+  -e MIKROTIK_PORT="22" \
+  -e MIKROTIK_KEY_FILENAME="$HOME/.ssh/mikrotik_mcp" \
+  -- "$HOME/.local/bin/mcp-server-mikrotik"
+```
+
+Raw JSON config:
+
+```json
+{
+  "type": "stdio",
+  "command": "$HOME/.local/bin/mcp-server-mikrotik",
+  "args": [],
+  "env": {
+    "MIKROTIK_HOST": "<mikrotik-host>",
+    "MIKROTIK_USERNAME": "mcp",
+    "MIKROTIK_PORT": "22",
+    "MIKROTIK_KEY_FILENAME": "$HOME/.ssh/mikrotik_mcp"
+  }
+}
+```
+
 ### playwright
 
 Official Playwright MCP server ([@playwright/mcp](https://www.npmjs.com/package/@playwright/mcp)) with default settings — no env vars, always pulls `@latest`.
@@ -140,6 +171,28 @@ Raw JSON config:
   "env": {
     "VAULT_ADDR": "https://<vault-host>",
     "VAULT_TOKEN": "<REDACTED>"
+  }
+}
+```
+
+### youtrack
+
+YouTrack MCP server, reached as a **hosted HTTP endpoint** (not a local process) at the instance's `/mcp` path. Authentication is a permanent token passed in an `Authorization: Bearer` header rather than an env var. This is the only non-stdio server in the inventory.
+
+```bash
+claude mcp add --transport http --scope user youtrack \
+  "https://<youtrack-host>/mcp" \
+  --header "Authorization: Bearer <REDACTED>"
+```
+
+Raw JSON config:
+
+```json
+{
+  "type": "http",
+  "url": "https://<youtrack-host>/mcp",
+  "headers": {
+    "Authorization": "Bearer <REDACTED>"
   }
 }
 ```
@@ -192,4 +245,4 @@ After importing, verify with `claude mcp list` or `claude mcp get <name>` — bo
 
 ## Prerequisites
 
-Node.js (`npx`) for `gitlab`/`kubernetes`/`playwright`, Docker for the Grafana and Vault servers, and a kubeconfig at `~/.kube/config.merged` for `kubernetes`. To restore on a new machine, run each server's `claude mcp add` command above, substituting real values for `<REDACTED>` and the masked `<...-host>` URLs.
+Node.js (`npx`) for `gitlab`/`kubernetes`/`playwright`, Docker for the Grafana and Vault servers, and a kubeconfig at `~/.kube/config.merged` for `kubernetes`. `mikrotik` needs the `mcp-server-mikrotik` binary at `~/.local/bin` plus the SSH private key at `~/.ssh/mikrotik_mcp` (and its public key authorized on the router for the `mcp` user). `youtrack` needs only network reachability to the hosted endpoint and a valid bearer token — no local runtime. To restore on a new machine, run each server's `claude mcp add` command above, substituting real values for `<REDACTED>` and the masked `<...-host>` URLs.
