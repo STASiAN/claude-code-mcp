@@ -52,6 +52,16 @@ Raw JSON config:
 }
 ```
 
+**Docker alternative.** The project also ships an official image, `zereight050/gitlab-mcp` (defaults to stdio — leave `SSE`/`STREAMABLE_HTTP` unset). Same env, passed through to the container:
+
+```bash
+claude mcp add --scope user gitlab \
+  -e GITLAB_API_URL="https://<gitlab-host>/api/v4" \
+  -e GITLAB_PERSONAL_ACCESS_TOKEN="<REDACTED>" \
+  -e GITLAB_READ_ONLY_MODE=false \
+  -- docker run -i --rm -e GITLAB_API_URL -e GITLAB_PERSONAL_ACCESS_TOKEN -e GITLAB_READ_ONLY_MODE zereight050/gitlab-mcp
+```
+
 ### grafana
 
 Official Grafana MCP server run as a Docker container. Credentials are passed into the container via `-e` env passthrough. Register once per Grafana instance (separate name, URL, and service-account token each).
@@ -101,6 +111,8 @@ Raw JSON config:
   }
 }
 ```
+
+No Docker alternative: the project ships a `Dockerfile` but publishes no image to Docker Hub/ghcr, so `npx` is the supported install.
 
 ### mikrotik
 
@@ -164,6 +176,13 @@ Raw JSON config:
   "args": ["@playwright/mcp@latest"],
   "env": {}
 }
+```
+
+**Docker alternative.** Microsoft publishes an official image, `mcr.microsoft.com/playwright/mcp` (the Docker build supports headless Chromium only):
+
+```bash
+claude mcp add --scope user playwright \
+  -- docker run -i --rm --init --pull=always mcr.microsoft.com/playwright/mcp
 ```
 
 ### vault-mcp-server
